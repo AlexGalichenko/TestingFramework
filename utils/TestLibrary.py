@@ -1,4 +1,6 @@
 import pandas as pd
+from utils.QueryExecutor import QueryExecutor
+from datetime import datetime
 
 pd.set_option('display.max_columns', None)
 pd.set_option('max_colwidth', None)
@@ -8,11 +10,18 @@ pd.set_option('display.width', 10000)
 # r'C:\Users\Yevhen_Nikolin\Desktop\sqls\DWH_CORE\S_ITEM_GEN_INFO\CORE_S_ITEM_GEN_INFO_VALIDATE_ITEM_STATUS_MAPPING.sql'
 # r'C:\Users\Yevhen_Nikolin\Desktop\sqls'
 
+
 class TestLibrary(object):
     def __init__(self, p_file_path: str, p_scripts_dir: str):
         self.lib_path = p_file_path
         self.scripts_dir = p_scripts_dir
         self.df_lib = self.__read_test_library(p_file_path)
+
+    def print_test_library(self):
+        pd.set_option('display.max_columns', None)
+        pd.set_option('max_colwidth', None)
+        pd.set_option('max_columns', None)
+        pd.set_option('display.width', 10000)
         print(self.df_lib)
 
     def __read_test_library(self, p_file_path: str) -> pd.DataFrame:
@@ -23,7 +32,7 @@ class TestLibrary(object):
     def read_script_file_from_disk(self, p_file_path: str) -> str:
         with open(p_file_path, 'r') as f_obj:
             res = f_obj.read()
-            print(res)
+            # print(res)
 
         return res
 
@@ -41,5 +50,14 @@ class TestLibrary(object):
 
 
 lib = TestLibrary(r'C:/Users/Yevhen_Nikolin/Desktop/dq_checks.json', r'C:/Users/Yevhen_Nikolin/Desktop/sqls')
-path = lib.build_script_path_for_dq_check('DQ_0025')
-lib.read_script_file_from_disk(path)
+exc = QueryExecutor('eaebsco.us-east-1', 'ynikolin', 'qQ3420308674', 'EA_QA_TEAM', 'EA_DU_DEV')
+path = lib.build_script_path_for_dq_check('DQ_0021')
+query = lib.read_script_file_from_disk(path)
+
+now = datetime.now()
+current_time = now.strftime("%H:%M:%S")
+print(current_time)
+exc.execute_query(query)
+now = datetime.now()
+current_time = now.strftime("%H:%M:%S")
+print(current_time)
